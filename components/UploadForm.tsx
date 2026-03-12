@@ -15,7 +15,7 @@ import VoiceSelector from './VoiceSelector';
 import LoadingOverlay from './LoadingOverlay';
 import {useAuth, useUser} from "@clerk/nextjs";
 import { toast } from 'sonner';
-import {checkBookExists, createBook, saveBookSegments} from "../lib/actions/book.actions";
+import {checkBookExists, createBook, saveBookSegments} from "@/lib/actions/book.actions";
 import {useRouter} from "next/navigation";
 import {parsePDFFile} from "@/lib/utils";
 import {upload} from "@vercel/blob/client";
@@ -56,7 +56,7 @@ const UploadForm = () => {
             if(existsCheck.exists && existsCheck.book) {
                 toast.info("Book with same title already exists.");
                 form.reset()
-                router.push(`/books/${existsCheck.book.slug}`)
+                router.push(`/books/${book.data.slug}`)
                 return;
             }
 

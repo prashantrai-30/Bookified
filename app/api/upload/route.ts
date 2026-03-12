@@ -6,19 +6,9 @@ import {MAX_FILE_SIZE} from "@/lib/constants";
 export async function POST(request: Request): Promise<NextResponse> {
     try {
         const body = (await request.json()) as HandleUploadBody;
+
         const jsonResponse = await handleUpload({
-            token: process.env.BLOB_READ_WRITE_TOKEN,
-            body,
-        });
-    } catch (e) {
-        const message = e instanceof Error ? e.message : "An unknown error occurred";
-        const status =
-            e instanceof SyntaxError ? 400 :
-            message.includes('Unauthorized') ? 401 : 500;
-        return NextResponse.json({ error: message }, { status });
-    }
-}
-            token: process.env.BLOB_READ_WRITE_TOKEN,
+            token: process.env.bookified_READ_WRITE_TOKEN,
             body,
             request,
             onBeforeGenerateToken: async () => {
@@ -49,6 +39,8 @@ export async function POST(request: Request): Promise<NextResponse> {
     } catch (e) {
         const message = e instanceof Error ? e.message : "An unknown error occurred";
         const status = message.includes('Unauthorized') ? 401 : 500;
-        return NextResponse.json({ error: message }, { status });
+        console.error('Upload error', e);
+        const clientMessage = status === 401 ? 'Unauthorized' : 'Upload failed';
+        return NextResponse.json({ error: clientMessage }, { status });
     }
 }
