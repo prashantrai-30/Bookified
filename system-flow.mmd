@@ -1,0 +1,26 @@
+flowchart LR
+    U[User] --> UI[Bookified Web App]
+    UI --> AUTH[Clerk Authentication]
+
+    subgraph UPLOAD[Upload Pipeline]
+        UI --> U1[Upload PDF and metadata]
+        U1 --> U2[Parse PDF into text segments]
+        U1 --> U3["POST /api/upload"]
+        U3 --> BLOB[(Vercel Blob Storage)]
+        U2 --> U4[Save book and segments]
+    end
+
+    U4 --> BOOKS[(MongoDB books)]
+    U4 --> SEGMENTS[(MongoDB book_segments)]
+
+    subgraph VOICE[Voice Interview Pipeline]
+        UI --> V1["Open /books/:slug"]
+        V1 --> V2[Start voice session]
+        V2 --> VAPI[Vapi Assistant]
+        VAPI --> V3["POST /api/vapi/search-book"]
+        V3 --> V4[Fetch relevant segments]
+        V4 --> SEGMENTS
+        V3 --> VAPI
+    end
+
+    V2 --> SESSIONS[(MongoDB voice_sessions)]
