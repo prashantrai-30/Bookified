@@ -1,13 +1,32 @@
 'use client';
 
 import {Mic, MicOff} from "lucide-react";
-import useVapi from "./hooks/useVapi";
+import useVapi from "@/hooks/useVapi";
 import {IBook} from "@/types";
 import Image from "next/image";
 import Transcript from "@/components/Transcript";
+import { cn } from "@/lib/utils";
+
+const STATUS_LABELS = {
+    idle: "Ready",
+    connecting: "Connecting",
+    starting: "Starting",
+    listening: "Listening",
+    thinking: "Thinking",
+    speaking: "Speaking",
+} as const;
+
+const formatDuration = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const secs = String(seconds % 60).padStart(2, "0");
+
+    return `${minutes}:${secs}`;
+};
 
 const VapiControls = ({ book }: { book: IBook }) => {
-    const { status, isActive, messages, currentMessage, currentUserMessage, duration, start, stop, clearErrors, } = useVapi(book)
+    const { status, isActive, messages, currentMessage, currentUserMessage, duration, start, stop } = useVapi(book)
+    const statusKey = status === "idle" ? "ready" : status;
+    const statusLabel = STATUS_LABELS[status];
 
     return (
         <>
@@ -50,9 +69,9 @@ const VapiControls = ({ book }: { book: IBook }) => {
                         </div>
 
                         <div className="flex flex-wrap gap-3">
-                            <div className="vapi-status-indicator">
-                                <span className="vapi-status-dot vapi-status-dot-ready" />
-                                <span className="vapi-status-text">Ready</span>
+                            <div className={cn("vapi-status-indicator", `vapi-status-indicator-${statusKey}`)}>
+                                <span className={cn("vapi-status-dot", `vapi-status-dot-${statusKey}`)} />
+                                <span className={cn("vapi-status-text", `vapi-status-text-${statusKey}`)}>{statusLabel}</span>
                             </div>
 
                             <div className="vapi-status-indicator">
@@ -60,7 +79,7 @@ const VapiControls = ({ book }: { book: IBook }) => {
                             </div>
 
                             <div className="vapi-status-indicator">
-                                <span className="vapi-status-text">0:00/15:00</span>
+                                <span className="vapi-status-text">{formatDuration(duration)}/15:00</span>
                             </div>
                         </div>
                     </div>
