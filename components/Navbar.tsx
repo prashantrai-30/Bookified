@@ -42,9 +42,9 @@ const Navbar = () => {
                             <div className="nav-user-link">
                                 <UserButton />
                                 {user?.firstName && (
-                                    <Link href="/subscriptions" className="nav-user-name">
+                                    <span className="nav-user-name">
                                         {user.firstName}
-                                    </Link>
+                                    </span>
                                 )}
                             </div>
                         </Show>

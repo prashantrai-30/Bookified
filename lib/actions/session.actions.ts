@@ -3,7 +3,6 @@
 import {EndSessionResult, StartSessionResult} from "@/types";
 import {connectToDatabase} from "@/database/mongoose";
 import VoiceSession from "@/database/models/voice-session.model";
-import {getCurrentBillingPeriodStart} from "@/lib/subscription-constants";
 
 export const startVoiceSession = async (clerkId: string, bookId: string): Promise<StartSessionResult> => {
     try {
@@ -11,11 +10,12 @@ export const startVoiceSession = async (clerkId: string, bookId: string): Promis
 
         // Limits/Plan to see whether a session is allowed.
 
+        const now = new Date();
         const session = await VoiceSession.create({
             clerkId,
             bookId,
-            startedAt: new Date(),
-            billingPeriodStart: getCurrentBillingPeriodStart(),
+            startedAt: now,
+            billingPeriodStart: new Date(now.getFullYear(), now.getMonth(), 1),
             durationSeconds: 0,
         });
 
